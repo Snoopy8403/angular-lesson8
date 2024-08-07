@@ -2,7 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { User } from './models/user.model';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { filter, map, tap } from 'rxjs';
+import { filter, map, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
