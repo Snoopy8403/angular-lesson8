@@ -36,6 +36,10 @@ export class AuthService {
     return this._currentUser.asReadonly();
   }
 
+  get isLoggedIn(){
+    return this._currentUser() !== undefined; 
+  }
+
   login(email: string, password: string) {
     return this.http.post<User>(`${this.BASE_URL}/login`, {email, password}).pipe(
       tap(user => { 
