@@ -1,25 +1,27 @@
 import { Injectable, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { User } from './models/user.model';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { filter, map, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly BASE_URL = `${environment.baseUrl}/auth`
-  private readonly _currentUser = signal<User | undefined>(undefined)
+  private readonly BASE_URL = `${environment.baseUrl}/auth`;
   private readonly CURRENT_USER_KEY = `currentUser`;
+
+  private readonly _currentUser = signal<User | undefined>(undefined);
 
   constructor(
     private readonly http: HttpClient,
     private readonly router: Router
   ) {
     const storedUser = localStorage.getItem(this.CURRENT_USER_KEY);
-    if(storedUser){
+
+    if(storedUser) {
       this._currentUser.set(JSON.parse(storedUser));
     }
 
@@ -29,24 +31,24 @@ export class AuthService {
         this.clearStoredUser();
         this._currentUser.set(undefined);
       }),
-      takeUntilDestroyed()).subscribe();
-   }
+      takeUntilDestroyed()
+    ).subscribe();
+  }
 
   get currentUser() {
     return this._currentUser.asReadonly();
   }
 
-  get isLoggedIn(){
-    return this._currentUser() !== undefined; 
+  get isLoggedIn() {
+    return this._currentUser() !== undefined;
   }
 
   login(email: string, password: string) {
     return this.http.post<User>(`${this.BASE_URL}/login`, {email, password}).pipe(
-      tap(user => { 
+      tap(user => {
         this._currentUser.set(user);
         this.storeUser(user);
-        }
-      )
+      })
     )
   }
 
@@ -70,7 +72,7 @@ export class AuthService {
     localStorage.setItem(this.CURRENT_USER_KEY, JSON.stringify(user));
   }
 
-  private clearStoredUser(){
+  private clearStoredUser() {
     localStorage.removeItem(this.CURRENT_USER_KEY);
   }
 }
